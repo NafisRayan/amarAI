@@ -647,20 +647,20 @@ function App() {
   );
 
   return (
-    <div className="h-screen bg-background text-foreground">
+    <div className="h-[100dvh] bg-background text-foreground">
       <div className="flex h-full">
         <aside className="hidden w-72 border-r md:block">{sidebar}</aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex h-14 items-center justify-between border-b px-3 md:px-5">
-            <div className="flex items-center gap-2">
+          <header className="flex h-14 items-center justify-between border-b px-2 sm:px-3 md:px-5">
+            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
               <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="md:hidden">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[300px] p-0">
+                <SheetContent side="left" className="w-[92vw] max-w-[320px] p-0">
                   <SheetHeader className="sr-only">
                     <SheetTitle>Conversation sidebar</SheetTitle>
                     <SheetDescription>
@@ -673,9 +673,11 @@ function App() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
+                  <Button variant="outline" className="max-w-[200px] gap-2 truncate sm:max-w-none">
                     <Sparkles className="h-4 w-4" />
-                    {PROVIDERS.find((item) => item.provider === provider)?.label}
+                    <span className="truncate text-xs sm:text-sm">
+                      {PROVIDERS.find((item) => item.provider === provider)?.label}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
@@ -689,7 +691,7 @@ function App() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Badge variant="outline" className="hidden sm:inline-flex">
+              <Badge variant="outline" className="hidden lg:inline-flex">
                 {model}
               </Badge>
 
@@ -701,7 +703,7 @@ function App() {
                       ? "destructive"
                       : "outline"
                 }
-                className="hidden sm:inline-flex"
+                className="hidden md:inline-flex"
               >
                 {healthState === "online"
                   ? "API online"
@@ -711,7 +713,7 @@ function App() {
               </Badge>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)}>
                 <Settings2 className="h-4 w-4" />
               </Button>
@@ -738,7 +740,7 @@ function App() {
 
           <main className="relative flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-              <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pb-44 pt-8 md:px-8">
+              <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-3 pb-48 pt-6 sm:px-4 sm:pt-8 md:px-8">
                 {errorMessage && (
                   <Card className="border-destructive/40 bg-destructive/5">
                     <CardContent className="p-3 text-sm text-destructive">{errorMessage}</CardContent>
@@ -759,7 +761,7 @@ function App() {
                 {activeConversation?.messages.map((message) => (
                   <div
                     key={message.id}
-                    className={cn("group flex items-start gap-3", message.role === "user" && "justify-end")}
+                    className={cn("group flex items-start gap-2 sm:gap-3", message.role === "user" && "justify-end")}
                   >
                     {message.role === "assistant" && (
                       <Avatar className="mt-1 h-8 w-8 border">
@@ -769,7 +771,7 @@ function App() {
 
                     <div
                       className={cn(
-                        "max-w-[85%] text-sm leading-relaxed",
+                        "max-w-[92%] text-sm leading-relaxed sm:max-w-[85%]",
                         message.role === "assistant"
                           ? "rounded-2xl rounded-tl-sm bg-muted px-4 py-3"
                           : "rounded-2xl rounded-tr-sm bg-primary px-4 py-3 text-primary-foreground"
@@ -825,7 +827,7 @@ function App() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="mt-1 h-7 w-7 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                      className="mt-1 h-7 w-7 shrink-0 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100"
                       onClick={() => void handleCopyMessage(message)}
                     >
                       {copiedMessageId === message.id ? (
@@ -840,17 +842,17 @@ function App() {
               </div>
             </ScrollArea>
 
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 px-3 pb-4 md:px-6 md:pb-6">
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 px-2 pb-3 sm:px-3 sm:pb-4 md:px-6 md:pb-6">
               <div className="pointer-events-auto mx-auto w-full max-w-3xl">
-                <Card className="border bg-background/95 shadow-sm backdrop-blur">
-                  <CardContent className="p-3">
+                <Card className="border bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80">
+                  <CardContent className="p-2.5 sm:p-3">
                     <textarea
                       value={draft}
                       onChange={(event) => setDraft(event.target.value)}
                       onKeyDown={onComposerKeyDown}
                       rows={2}
                       placeholder="Message amarAI"
-                      className="min-h-[54px] w-full resize-none border-0 bg-transparent p-1 text-sm outline-none placeholder:text-muted-foreground"
+                      className="min-h-[52px] w-full resize-none border-0 bg-transparent p-1 text-sm outline-none placeholder:text-muted-foreground"
                     />
 
                     <div className="mt-2 flex items-center justify-between">
