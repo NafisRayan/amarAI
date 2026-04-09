@@ -647,13 +647,13 @@ function App() {
   );
 
   return (
-    <div className="h-[100dvh] bg-background text-foreground">
+    <div className="h-[100dvh] overflow-hidden bg-background text-foreground">
       <div className="flex h-full">
-        <aside className="hidden w-72 border-r md:block">{sidebar}</aside>
+        <aside className="hidden w-72 border-r md:block lg:w-80">{sidebar}</aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex h-14 items-center justify-between border-b px-2 sm:px-3 md:px-5">
-            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+          <header className="flex h-14 items-center justify-between border-b bg-background/90 px-2 backdrop-blur supports-[backdrop-filter]:bg-background/75 sm:px-3 md:px-5">
+            <div className="flex min-w-0 items-center gap-1.5 overflow-hidden sm:gap-2">
               <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="md:hidden">
@@ -673,7 +673,7 @@ function App() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="max-w-[200px] gap-2 truncate sm:max-w-none">
+                  <Button variant="outline" className="max-w-[180px] gap-2 truncate sm:max-w-[230px] md:max-w-none">
                     <Sparkles className="h-4 w-4" />
                     <span className="truncate text-xs sm:text-sm">
                       {PROVIDERS.find((item) => item.provider === provider)?.label}
@@ -691,7 +691,7 @@ function App() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Badge variant="outline" className="hidden lg:inline-flex">
+              <Badge variant="outline" className="hidden xl:inline-flex">
                 {model}
               </Badge>
 
@@ -703,7 +703,7 @@ function App() {
                       ? "destructive"
                       : "outline"
                 }
-                className="hidden md:inline-flex"
+                className="hidden lg:inline-flex"
               >
                 {healthState === "online"
                   ? "API online"
@@ -717,7 +717,9 @@ function App() {
               <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)}>
                 <Settings2 className="h-4 w-4" />
               </Button>
-              <ThemeToggle />
+              <div className="hidden xs:block">
+                <ThemeToggle />
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon">
@@ -740,7 +742,7 @@ function App() {
 
           <main className="relative flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-              <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-3 pb-48 pt-6 sm:px-4 sm:pt-8 md:px-8">
+              <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-2 pb-48 pt-4 sm:gap-5 sm:px-4 sm:pt-6 md:gap-6 md:px-8 md:pt-8">
                 {errorMessage && (
                   <Card className="border-destructive/40 bg-destructive/5">
                     <CardContent className="p-3 text-sm text-destructive">{errorMessage}</CardContent>
@@ -761,49 +763,62 @@ function App() {
                 {activeConversation?.messages.map((message) => (
                   <div
                     key={message.id}
-                    className={cn("group flex items-start gap-2 sm:gap-3", message.role === "user" && "justify-end")}
+                    className={cn(
+                      "group flex items-start gap-2 px-1 sm:gap-3 sm:px-0",
+                      message.role === "user" && "justify-end"
+                    )}
                   >
                     {message.role === "assistant" && (
-                      <Avatar className="mt-1 h-8 w-8 border">
+                      <Avatar className="mt-1 hidden h-8 w-8 border sm:flex">
                         <AvatarFallback>AI</AvatarFallback>
                       </Avatar>
                     )}
 
                     <div
                       className={cn(
-                        "max-w-[92%] text-sm leading-relaxed sm:max-w-[85%]",
+                        "max-w-[95%] text-[13px] leading-relaxed sm:max-w-[90%] sm:text-sm lg:max-w-[82%]",
                         message.role === "assistant"
-                          ? "rounded-2xl rounded-tl-sm bg-muted px-4 py-3"
-                          : "rounded-2xl rounded-tr-sm bg-primary px-4 py-3 text-primary-foreground"
+                          ? "rounded-2xl rounded-tl-sm bg-muted px-3.5 py-2.5 sm:px-4 sm:py-3"
+                          : "rounded-2xl rounded-tr-sm bg-primary px-3.5 py-2.5 text-primary-foreground sm:px-4 sm:py-3"
                       )}
                     >
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
-                          p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
-                          ul: ({ children }) => <ul className="mb-3 list-disc pl-5 last:mb-0">{children}</ul>,
-                          ol: ({ children }) => <ol className="mb-3 list-decimal pl-5 last:mb-0">{children}</ol>,
+                          p: ({ children }) => <p className="mb-2.5 last:mb-0">{children}</p>,
+                          ul: ({ children }) => <ul className="mb-2.5 list-disc pl-4 sm:pl-5 last:mb-0">{children}</ul>,
+                          ol: ({ children }) => <ol className="mb-2.5 list-decimal pl-4 sm:pl-5 last:mb-0">{children}</ol>,
                           li: ({ children }) => <li className="mb-1 last:mb-0">{children}</li>,
-                          h1: ({ children }) => <h1 className="mb-2 text-lg font-semibold">{children}</h1>,
-                          h2: ({ children }) => <h2 className="mb-2 text-base font-semibold">{children}</h2>,
+                          h1: ({ children }) => <h1 className="mb-2 text-base font-semibold sm:text-lg">{children}</h1>,
+                          h2: ({ children }) => <h2 className="mb-2 text-sm font-semibold sm:text-base">{children}</h2>,
                           h3: ({ children }) => <h3 className="mb-2 text-sm font-semibold">{children}</h3>,
                           blockquote: ({ children }) => (
-                            <blockquote className="mb-3 border-l-2 border-border/70 pl-3 italic last:mb-0">
+                            <blockquote className="mb-2.5 border-l-2 border-border/70 pl-3 italic last:mb-0">
                               {children}
                             </blockquote>
                           ),
+                          table: ({ children }) => (
+                            <div className="mb-2.5 overflow-x-auto rounded-md border last:mb-0">
+                              <table className="w-full min-w-[320px] border-collapse text-left text-xs sm:text-sm">
+                                {children}
+                              </table>
+                            </div>
+                          ),
+                          thead: ({ children }) => <thead className="bg-muted/70">{children}</thead>,
+                          th: ({ children }) => <th className="border-b px-2 py-1.5 font-medium">{children}</th>,
+                          td: ({ children }) => <td className="border-b px-2 py-1.5 align-top last:border-b-0">{children}</td>,
                           code: ({ className, children }) => {
                             const inline = !className;
                             if (inline) {
                               return (
-                                <code className="rounded bg-black/10 px-1 py-0.5 text-[0.82em] dark:bg-white/10">
+                                <code className="rounded bg-foreground/10 px-1 py-0.5 font-mono text-[0.82em]">
                                   {children}
                                 </code>
                               );
                             }
 
                             return (
-                              <pre className="mb-3 overflow-x-auto rounded-md border bg-background/60 p-3 text-xs last:mb-0">
+                              <pre className="mb-2.5 overflow-x-auto rounded-md border bg-background/65 p-2.5 font-mono text-[11px] sm:p-3 sm:text-xs last:mb-0">
                                 <code>{children}</code>
                               </pre>
                             );
@@ -827,7 +842,7 @@ function App() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="mt-1 h-7 w-7 shrink-0 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100"
+                      className="mt-1 h-7 w-7 shrink-0 self-end opacity-100 transition-opacity md:self-start md:opacity-0 md:group-hover:opacity-100"
                       onClick={() => void handleCopyMessage(message)}
                     >
                       {copiedMessageId === message.id ? (
@@ -842,7 +857,7 @@ function App() {
               </div>
             </ScrollArea>
 
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 px-2 pb-3 sm:px-3 sm:pb-4 md:px-6 md:pb-6">
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] sm:px-3 sm:pb-4 md:px-6 md:pb-6">
               <div className="pointer-events-auto mx-auto w-full max-w-3xl">
                 <Card className="border bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80">
                   <CardContent className="p-2.5 sm:p-3">
@@ -855,7 +870,7 @@ function App() {
                       className="min-h-[52px] w-full resize-none border-0 bg-transparent p-1 text-sm outline-none placeholder:text-muted-foreground"
                     />
 
-                    <div className="mt-2 flex items-center justify-between">
+                    <div className="mt-2 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1">
                         <Button variant="ghost" size="icon" disabled>
                           <Paperclip className="h-4 w-4" />
@@ -865,7 +880,11 @@ function App() {
                         </Button>
                       </div>
 
-                      <Button size="icon" onClick={() => void handleSend()} disabled={!draft.trim() || isReplying || !activeConversation}>
+                      <Button
+                        size="icon"
+                        onClick={() => void handleSend()}
+                        disabled={!draft.trim() || isReplying || !activeConversation}
+                      >
                         {isReplying ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
