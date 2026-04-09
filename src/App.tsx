@@ -29,6 +29,8 @@ import { cn } from "@/lib/utils";
 import {
   ArrowUp,
   CircleHelp,
+  Copy,
+  Check,
   Loader2,
   Menu,
   MessageSquare,
@@ -41,6 +43,8 @@ import {
   Trash2,
   User,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Provider = "openai-compatible" | "gemini" | "huggingface";
 
@@ -199,6 +203,7 @@ function App() {
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [healthState, setHealthState] = useState<HealthState>("checking");
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [provider, setProvider] = useState<Provider>("openai-compatible");
   const [model, setModel] = useState(PROVIDERS[0].defaultModel);
   const [baseUrl, setBaseUrl] = useState(PROVIDERS[0].defaultBaseUrl);
@@ -533,6 +538,18 @@ function App() {
     }
   };
 
+  const handleCopyMessage = async (message: Message) => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopiedMessageId(message.id);
+      window.setTimeout(() => {
+        setCopiedMessageId((current) => (current === message.id ? null : current));
+      }, 1400);
+    } catch {
+      setErrorMessage("Could not copy message to clipboard.");
+    }
+  };
+
   const sidebar = (
     <div className="flex h-full flex-col bg-muted/40">
       <div className="p-3">
@@ -742,7 +759,7 @@ function App() {
                 {activeConversation?.messages.map((message) => (
                   <div
                     key={message.id}
-                    className={cn("flex items-start gap-3", message.role === "user" && "justify-end")}
+                    className={cn("group flex items-start gap-3", message.role === "user" && "justify-end")}
                   >
                     {message.role === "assistant" && (
                       <Avatar className="mt-1 h-8 w-8 border">
@@ -752,14 +769,72 @@ function App() {
 
                     <div
                       className={cn(
-                        "max-w-[85%] whitespace-pre-wrap text-sm leading-relaxed",
+                        "max-w-[85%] text-sm leading-relaxed",
                         message.role === "assistant"
                           ? "rounded-2xl rounded-tl-sm bg-muted px-4 py-3"
                           : "rounded-2xl rounded-tr-sm bg-primary px-4 py-3 text-primary-foreground"
                       )}
                     >
-                      {message.content || (isReplying && message.role === "assistant" ? "..." : "")}
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+                          ul: ({ children }) => <ul className="mb-3 list-disc pl-5 last:mb-0">{children}</ul>,
+                          ol: ({ children }) => <ol className="mb-3 list-decimal pl-5 last:mb-0">{children}</ol>,
+                          li: ({ children }) => <li className="mb-1 last:mb-0">{children}</li>,
+                          h1: ({ children }) => <h1 className="mb-2 text-lg font-semibold">{children}</h1>,
+                          h2: ({ children }) => <h2 className="mb-2 text-base font-semibold">{children}</h2>,
+                          h3: ({ children }) => <h3 className="mb-2 text-sm font-semibold">{children}</h3>,
+                          blockquote: ({ children }) => (
+                            <blockquote className="mb-3 border-l-2 border-border/70 pl-3 italic last:mb-0">
+                              {children}
+                            </blockquote>
+                          ),
+                          code: ({ className, children }) => {
+                            const inline = !className;
+                            if (inline) {
+                              return (
+                                <code className="rounded bg-black/10 px-1 py-0.5 text-[0.82em] dark:bg-white/10">
+                                  {children}
+                                </code>
+                              );
+                            }
+
+                            return (
+                              <pre className="mb-3 overflow-x-auto rounded-md border bg-background/60 p-3 text-xs last:mb-0">
+                                <code>{children}</code>
+                              </pre>
+                            );
+                          },
+                          a: ({ href, children }) => (
+                            <a
+                              href={href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="underline underline-offset-4"
+                            >
+                              {children}
+                            </a>
+                          ),
+                        }}
+                      >
+                        {message.content || (isReplying && message.role === "assistant" ? "..." : "")}
+                      </ReactMarkdown>
                     </div>
+
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="mt-1 h-7 w-7 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() => void handleCopyMessage(message)}
+                    >
+                      {copiedMessageId === message.id ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                      <span className="sr-only">Copy message</span>
+                    </Button>
                   </div>
                 ))}
               </div>
