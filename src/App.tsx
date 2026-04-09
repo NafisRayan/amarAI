@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -156,21 +155,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { AlertDialogPortal } from "@/components/ui/alert-dialog";
 import {
   CalendarIcon,
-  Check,
   ChevronsUpDown,
-  ClipboardCopy,
   Download,
   Eye,
   EyeOff,
   Heart,
-  Loader2,
   Plus,
   Settings,
   Trash2,
   User,
+  Calculator,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -186,7 +182,6 @@ function App() {
   const [isToggled, setIsToggled] = useState(false);
   const [selectedRadio, setSelectedRadio] = useState("option-one");
   const [checkboxChecked, setCheckboxChecked] = useState(false);
-  const [commandOpen, setCommandOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const [selectedToggle, setSelectedToggle] = useState("left");
